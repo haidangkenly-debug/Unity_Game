@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73076a77f69fc264e9677a8a56688c12, type: 3}
+  m_Name: Mage
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerData
+  characterName: Mage
+  characterIcon: {fileID: 0}
+  runSpeed: 8
+  jumpForce: 12
+  jumpMultiplier: 0.5
+  normalGravity: 4
+  fallGravity: 5
+  jumpGravity: 3
+  maxHP: 200
+  maxMana: 400
+  attackPower: 18
+  critChance: 0.1
+  critDamage: 1
+  dashSpeed: 12
+  dashDuration: 0.3
+  dashCooldown: 1
+  dashManaCost: 20
+  skill1Name: Attack_1
+  skill1Damage: 15
+  skill1Cooldown: 0.33
+  skill2Name: Attack_2
+  skill2Damage: 20
+  skill2Cooldown: 1.5
+  groundCheckRadius: 0.5
