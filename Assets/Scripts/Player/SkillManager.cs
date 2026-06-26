@@ -10,6 +10,9 @@ public class SkillManager : MonoBehaviour
     private float skill2Cooldown = 0f;
     private float dashCooldown = 0f;
 
+    // ✅ NEW: Track ready state
+    private bool isReady = false;
+
     // Events for UI
     public event Action<float, float> OnSkill1CooldownChanged;
     public event Action<float, float> OnSkill2CooldownChanged;
@@ -20,31 +23,26 @@ public class SkillManager : MonoBehaviour
         playerStats = GetComponent<PlayerStats>();
     }
 
-    // 🔧 FIX: Di chuyển sang Start() để chắc chắn CharacterPrefabManager đã gán playerData
-    private void Start()
+    // ✅ NEW: Called by PlayerController after data assignment
+    public void InitializeSkillManager(PlayerData data)
     {
-        PlayerController controller = GetComponent<PlayerController>();
-        if (controller == null)
+        playerData = data;
+        isReady = (playerData != null && playerStats != null);
+        
+        if (isReady)
         {
-            Debug.LogError("[SkillManager] ❌ PlayerController không tìm thấy!");
-            return;
+            Debug.Log($"<color=cyan>[SkillManager] ✅ Khởi tạo thành công cho: {playerData.characterName}</color>");
         }
-
-        playerData = controller.playerData;
-
-        if (playerData == null)
+        else
         {
-            Debug.LogError("[SkillManager] ❌ playerData vẫn NULL! CharacterPrefabManager chưa gán?");
-            return;
+            Debug.LogError("[SkillManager] ❌ Failed to initialize - null references!");
         }
-
-        Debug.Log($"<color=cyan>[SkillManager] ✅ Khởi tạo thành công cho: {playerData.characterName}</color>");
     }
 
     private void Update()
     {
-        // 🔧 FIX: Thêm null check để tránh NullReferenceException
-        if (playerData == null) return;
+        // ✅ SINGLE CHECK: One property check instead of 9 individual checks
+        if (!isReady) return;
 
         if (skill1Cooldown > 0)
         {
@@ -65,40 +63,17 @@ public class SkillManager : MonoBehaviour
         }
     }
 
-    public bool CanUseSkill1()
-    {
-        if (playerData == null)
-        {
-            Debug.LogWarning("[SkillManager] playerData chưa được khởi tạo!");
-            return false;
-        }
-        return skill1Cooldown <= 0;
-    }
-
-    public bool CanUseSkill2()
-    {
-        if (playerData == null)
-        {
-            Debug.LogWarning("[SkillManager] playerData chưa được khởi tạo!");
-            return false;
-        }
-        return skill2Cooldown <= 0;
-    }
-
+    // ✅ SIMPLIFIED: No null checks in methods
+    public bool CanUseSkill1() => skill1Cooldown <= 0;
+    public bool CanUseSkill2() => skill2Cooldown <= 0;
+    
     public bool CanDash()
     {
-        if (playerData == null || playerStats == null)
-        {
-            Debug.LogWarning("[SkillManager] playerData hoặc playerStats chưa được khởi tạo!");
-            return false;
-        }
-        return dashCooldown <= 0 && playerStats.CanUseMana(playerData.dashManaCost);
+        return dashCooldown <= 0 && playerStats.HasEnoughMana(playerData.dashManaCost);
     }
 
     public void UseSkill1()
     {
-        if (playerData == null) return;
-
         if (CanUseSkill1())
         {
             skill1Cooldown = playerData.skill1Cooldown;
@@ -109,8 +84,6 @@ public class SkillManager : MonoBehaviour
 
     public void UseSkill2()
     {
-        if (playerData == null) return;
-
         if (CanUseSkill2())
         {
             skill2Cooldown = playerData.skill2Cooldown;
@@ -119,10 +92,9 @@ public class SkillManager : MonoBehaviour
         }
     }
 
+    // ✅ IMPROVED: Now just consume mana, don't check again
     public void UseDash()
     {
-        if (playerData == null || playerStats == null) return;
-
         if (CanDash())
         {
             playerStats.UseMana(playerData.dashManaCost);
@@ -134,19 +106,16 @@ public class SkillManager : MonoBehaviour
 
     public float GetSkill1CooldownPercent()
     {
-        if (playerData == null) return 0f;
         return skill1Cooldown / playerData.skill1Cooldown;
     }
 
     public float GetSkill2CooldownPercent()
     {
-        if (playerData == null) return 0f;
         return skill2Cooldown / playerData.skill2Cooldown;
     }
 
     public float GetDashCooldownPercent()
     {
-        if (playerData == null) return 0f;
         return dashCooldown / playerData.dashCooldown;
     }
 }

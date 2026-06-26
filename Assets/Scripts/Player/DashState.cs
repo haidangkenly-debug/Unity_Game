@@ -3,10 +3,11 @@ using UnityEngine;
 public class DashState : PlayerState
 {
     private float dashTimer;
-
+    private GhostTrail ghostTrail;
     public override void Initialize(PlayerController controller)
     {
         base.Initialize(controller);
+        ghostTrail = controller.GetComponent<GhostTrail>();
     }
 
     public override void Enter()
@@ -18,6 +19,10 @@ public class DashState : PlayerState
         
         rb.gravityScale = 0f;
         rb.linearVelocity = new Vector2(playerData.dashSpeed * playerController.facingDirection, 0f);
+        if (ghostTrail != null)
+        {
+            ghostTrail.StartGhosting();
+        }
     }
 
     public override void Update()
@@ -49,6 +54,10 @@ public class DashState : PlayerState
         animator.SetBool("isDashing", false);
         rb.gravityScale = playerData.normalGravity;
         rb.linearVelocity = new Vector2(rb.linearVelocity.x * 0.5f, rb.linearVelocity.y);
+        if (ghostTrail != null)
+        {
+            ghostTrail.StopGhosting();
+        }
     }
 
     private void ReturnToNormalState()

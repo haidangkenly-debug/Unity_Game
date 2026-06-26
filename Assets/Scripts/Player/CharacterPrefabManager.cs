@@ -60,32 +60,17 @@ public class CharacterPrefabManager : MonoBehaviour
         SpawnCharacter(index);
     }
 
+    // ✅ REFACTORED: Main spawn logic (simplified)
     private void SpawnCharacter(int index)
     {
-        if (currentCharacterInstance != null)
-        {
-            // 🔧 FIX: Deselect dalam editor sebelum destroy
-            #if UNITY_EDITOR
-            if (UnityEditor.Selection.activeGameObject == currentCharacterInstance)
-            {
-                UnityEditor.Selection.activeGameObject = null;
-                Debug.Log("[CharacterPrefabManager] 🔓 Deselected current character");
-            }
-            #endif
-
-            Destroy(currentCharacterInstance);
-            Debug.Log("[CharacterPrefabManager] 🗑️ Destroyed previous character instance");
-        }
+        DestroyCurrentCharacter();
 
         currentCharacterIndex = index;
         CharacterPrefabEntry entry = characterPrefabs[index];
 
-        if (entry.prefab == null)
-        {
-            Debug.LogError($"[CharacterPrefabManager] ❌ Prefab at index {index} is null!");
-            return;
-        }
+        if (!ValidateEntry(entry)) return;
 
+        // Instantiate new character
         currentCharacterInstance = Instantiate(
             entry.prefab,
             spawnPoint.position,
@@ -99,38 +84,81 @@ public class CharacterPrefabManager : MonoBehaviour
             return;
         }
 
-        // 🔧 CRITICAL FIX: Get components and setup data
-        PlayerController controller = currentCharacterInstance.GetComponent<PlayerController>();
+        SetupCharacter(currentCharacterInstance, entry);
+
+        Debug.Log($"<color=cyan>✅ [CharacterPrefabManager] Spawned: {entry.characterName} (Index: {index})</color>");
+        onCharacterChanged?.Invoke(currentCharacterInstance, entry.playerData);
+    }
+
+    // ✅ HELPER METHOD 1: Cleanup
+    private void DestroyCurrentCharacter()
+    {
+        if (currentCharacterInstance == null) return;
+
+        #if UNITY_EDITOR
+        if (UnityEditor.Selection.activeGameObject == currentCharacterInstance)
+        {
+            UnityEditor.Selection.activeGameObject = null;
+            Debug.Log("[CharacterPrefabManager] 🔓 Deselected current character");
+        }
+        #endif
+
+        Destroy(currentCharacterInstance);
+        Debug.Log("[CharacterPrefabManager] 🗑️ Destroyed previous character instance");
+    }
+
+    // ✅ HELPER METHOD 2: Validation
+    private bool ValidateEntry(CharacterPrefabEntry entry)
+    {
+        if (entry == null || entry.prefab == null)
+        {
+            Debug.LogError("[CharacterPrefabManager] ❌ Invalid prefab entry!");
+            return false;
+        }
+
+        if (entry.playerData == null)
+        {
+            Debug.LogError("[CharacterPrefabManager] ❌ playerData is null!");
+            return false;
+        }
+
+        return true;
+    }
+
+    // ✅ HELPER METHOD 3: Setup components
+    private void SetupCharacter(GameObject instance, CharacterPrefabEntry entry)
+    {
+        var controller = instance.GetComponent<PlayerController>();
+        var stats = instance.GetComponent<PlayerStats>();
+        var rb = instance.GetComponent<Rigidbody2D>();
+        var anim = instance.GetComponentInChildren<Animator>();
+
+        // Validate critical components
         if (controller == null)
         {
             Debug.LogError("[CharacterPrefabManager] ❌ PlayerController not found on prefab!");
-            Destroy(currentCharacterInstance);
+            Destroy(instance);
             return;
         }
 
-        // 🔧 Verify groundCheck is assigned in prefab
         if (controller.groundCheck == null)
         {
-            Debug.LogError("[CharacterPrefabManager] ❌ CRITICAL: groundCheck not assigned in prefab!");
-            Debug.LogError("[CharacterPrefabManager] ❌ Please assign groundCheck Transform in PlayerController!");
-            Destroy(currentCharacterInstance);
+            Debug.LogError("[CharacterPrefabManager] ❌ groundCheck not assigned in prefab!");
+            Destroy(instance);
             return;
         }
 
-        // 🔧 NEW: Call OnPlayerDataAssigned to properly initialize
-        if (entry.playerData != null)
+        if (rb == null)
         {
-            controller.OnPlayerDataAssigned(entry.playerData);
-        }
-        else
-        {
-            Debug.LogError($"[CharacterPrefabManager] ❌ playerData at index {index} is null!");
-            Destroy(currentCharacterInstance);
+            Debug.LogError("[CharacterPrefabManager] ❌ Rigidbody2D not found on prefab!");
+            Destroy(instance);
             return;
         }
 
-        // Update PlayerStats if present
-        PlayerStats stats = controller.GetComponent<PlayerStats>();
+        // Initialize PlayerController with data
+        controller.OnPlayerDataAssigned(entry.playerData);
+
+        // Update stats if present
         if (stats != null)
         {
             stats.UpdateCharacterData(entry.playerData);
@@ -141,22 +169,11 @@ public class CharacterPrefabManager : MonoBehaviour
             Debug.LogWarning("[CharacterPrefabManager] ⚠️ PlayerStats not found on prefab!");
         }
 
-        // Verify other critical components
-        Rigidbody2D rb = currentCharacterInstance.GetComponent<Rigidbody2D>();
-        if (rb == null)
-        {
-            Debug.LogError("[CharacterPrefabManager] ❌ Rigidbody2D not found on prefab!");
-        }
-
-        Animator anim = currentCharacterInstance.GetComponentInChildren<Animator>();
+        // Warn if Animator missing
         if (anim == null)
         {
             Debug.LogWarning("[CharacterPrefabManager] ⚠️ Animator not found on prefab!");
         }
-
-        Debug.Log($"<color=cyan>✅ [CharacterPrefabManager] Spawned: {entry.characterName} (Index: {index})</color>");
-        
-        onCharacterChanged?.Invoke(currentCharacterInstance, entry.playerData);
     }
 
     // ========== GETTER METHODS ==========

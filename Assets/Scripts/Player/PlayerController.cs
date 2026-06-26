@@ -31,8 +31,11 @@ public class PlayerController : MonoBehaviour
     private int selectedAttackSlot = 1;
     public int facingDirection = 1;
 
-    // 🔧 FIX: Track initialization state
+    // ✅ NEW: Track initialization state
     private bool isInitialized = false;
+
+    // ✅ NEW: Single property for readiness check
+    private bool IsReady => playerData != null && currentState != null && isInitialized;
 
     private void Start()
     {
@@ -40,33 +43,17 @@ public class PlayerController : MonoBehaviour
         anim = GetComponentInChildren<Animator>();
         playerInput = GetComponent<PlayerInput>();
 
-        // 🔧 CRITICAL FIX: Check groundCheck assignment first!
+        // ✅ CRITICAL: Validate groundCheck first
         if (groundCheck == null)
         {
             Debug.LogError("[PlayerController] ❌ CRITICAL: groundCheck Transform is NOT assigned!");
             Debug.LogError("[PlayerController] ❌ Please assign groundCheck in the prefab's PlayerController component");
-            enabled = false;  // Disable script to prevent further errors
+            enabled = false;
             return;
         }
 
-        // 🔧 FIX: Warn if playerData is null (will be set by CharacterPrefabManager)
+        // ✅ Don't initialize states here - wait for CharacterPrefabManager
         if (playerData == null)
-        {
-            Debug.LogWarning("[PlayerController] ⚠️ playerData is NULL (CharacterPrefabManager will assign it)");
-            // Don't return - we'll initialize states anyway
-            // CharacterPrefabManager will set playerData in SpawnCharacter()
-        }
-
-        // 🔧 FIX: Only initialize states if playerData is available
-        if (playerData != null)
-        {
-            InitializeStates();
-            TransitionToState(idleState);
-            isInitialized = true;
-
-            Debug.Log($"<color=green>✅ [PlayerController] Initialized for: {playerData.characterName}</color>");
-        }
-        else
         {
             Debug.Log("[PlayerController] 🕐 Waiting for playerData from CharacterPrefabManager...");
         }
@@ -76,10 +63,11 @@ public class PlayerController : MonoBehaviour
     {
         if (playerData == null)
         {
-            Debug.LogError("[PlayerController] Cannot initialize states - playerData is NULL!");
+            Debug.LogError("[PlayerController] ❌ Cannot initialize states - playerData is NULL!");
             return;
         }
 
+        // ✅ Create all states
         idleState = new IdleState();
         runState = new RunState();
         jumpState = new JumpState();
@@ -87,6 +75,7 @@ public class PlayerController : MonoBehaviour
         dashState = new DashState();
         attackState = new AttackState();
 
+        // ✅ Initialize all states
         foreach (var state in new PlayerState[] { idleState, runState, jumpState, fallState, dashState, attackState })
         {
             state.Initialize(this);
@@ -95,22 +84,20 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        // 🔧 FIX: Guard clause - ensure playerData and states exist
-        if (playerData == null || currentState == null)
-            return;
+        // ✅ OPTIMIZED: Single IsReady check instead of 11 null checks
+        if (!IsReady) return;
 
         if (currentState is not DashState)
         {
             Flip();
         }
-        currentState?.Update();
+        currentState.Update();
     }
 
     private void FixedUpdate()
     {
-        // 🔧 FIX: Guard clause for FixedUpdate
-        if (playerData == null || groundCheck == null)
-            return;
+        // ✅ OPTIMIZED: Single IsReady check
+        if (!IsReady) return;
 
         CheckGrounded();
 
@@ -119,7 +106,7 @@ public class PlayerController : MonoBehaviour
             ApplyVariableGravity();
         }
 
-        currentState?.FixedUpdate();
+        currentState.FixedUpdate();
         HandleJumpInput();
     }
 
@@ -127,27 +114,41 @@ public class PlayerController : MonoBehaviour
     {
         if (newState == null)
         {
-            Debug.LogError("[PlayerController] Attempted to transition to NULL state!");
+            Debug.LogError("[PlayerController] ❌ Attempted to transition to NULL state!");
             return;
         }
 
         currentState?.Exit();
         currentState = newState;
-        currentState?.Enter();
+        currentState.Enter();
     }
 
-    // 🔧 NEW: Public method for CharacterPrefabManager to call after setting playerData
+    // ✅ OPTIMIZED: Single initialization point called by CharacterPrefabManager
     public void OnPlayerDataAssigned(PlayerData newData)
     {
+        if (newData == null)
+        {
+            Debug.LogError("[PlayerController] ❌ Tried to assign NULL PlayerData!");
+            return;
+        }
+
         playerData = newData;
 
-        if (!isInitialized && playerData != null)
+        // ✅ Initialize ONLY once
+        if (!isInitialized)
         {
             InitializeStates();
             TransitionToState(idleState);
             isInitialized = true;
 
-            Debug.Log($"<color=green>✅ [PlayerController] Initialized for: {playerData.characterName}</color>");
+            // ✅ Initialize SkillManager with data
+            SkillManager skillMgr = GetComponent<SkillManager>();
+            if (skillMgr != null)
+            {
+                skillMgr.InitializeSkillManager(playerData);
+            }
+
+            Debug.Log($"<color=green>✅ [PlayerController] Ready: {playerData.characterName}</color>");
         }
     }
 
@@ -183,9 +184,9 @@ public class PlayerController : MonoBehaviour
     {
         if (value.isPressed)
         {
-            if (playerData == null || currentState == null)
+            if (!IsReady)
             {
-                Debug.LogWarning("[PlayerController] Cannot attack - playerData or state not initialized!");
+                Debug.LogWarning("[PlayerController] Cannot attack - system not ready!");
                 return;
             }
 
@@ -217,7 +218,6 @@ public class PlayerController : MonoBehaviour
                 else
                 {
                     Debug.Log("<color=red>[ATTACK 1] ⏳ Đang cooldown!</color>");
-                    return;
                 }
             }
             // ================= SLOT 2 (ATTACK_2) =================
@@ -235,7 +235,6 @@ public class PlayerController : MonoBehaviour
                 else
                 {
                     Debug.Log("<color=red>[ATTACK 2] ⏳ Đang cooldown!</color>");
-                    return;
                 }
             }
         }
@@ -245,9 +244,9 @@ public class PlayerController : MonoBehaviour
     {
         if (value.isPressed)
         {
-            if (playerData == null || currentState == null)
+            if (!IsReady)
             {
-                Debug.LogWarning("[PlayerController] Cannot dash - playerData not initialized!");
+                Debug.LogWarning("[PlayerController] Cannot dash - system not ready!");
                 return;
             }
 
@@ -279,9 +278,9 @@ public class PlayerController : MonoBehaviour
     {
         if (value.isPressed)
         {
-            if (playerData == null || currentState == null)
+            if (!IsReady)
             {
-                Debug.LogWarning("[PlayerController] Cannot switch - playerData not initialized!");
+                Debug.LogWarning("[PlayerController] Cannot switch - system not ready!");
                 return;
             }
 
@@ -322,14 +321,7 @@ public class PlayerController : MonoBehaviour
 
     public void CheckGrounded()
     {
-        // 🔧 CRITICAL: groundCheck must not be null
-        if (groundCheck == null)
-        {
-            Debug.LogError("[PlayerController] groundCheck is NULL in CheckGrounded()!");
-            isGrounded = false;
-            return;
-        }
-
+        // ✅ groundCheck is validated in Start()
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, playerData.groundCheckRadius, groundLayer);
     }
 
@@ -349,8 +341,6 @@ public class PlayerController : MonoBehaviour
 
     public void ApplyVariableGravity()
     {
-        if (playerData == null) return;
-
         if (rb.linearVelocity.y < -0.01f)
         {
             rb.gravityScale = playerData.fallGravity;
@@ -365,6 +355,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    // ✅ DIRECT CALLS: No AnimationBridge needed
     public void AnimEvent_EnableCancel()
     {
         if (currentState is AttackState attack) attack.EnableAttackCancel();

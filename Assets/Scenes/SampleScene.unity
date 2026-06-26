@@ -13664,6 +13664,12 @@ MonoBehaviour:
   - characterName: Paladin
     prefab: {fileID: 5298238798931203466, guid: 09303d7c04528e146aac2a142698f53b, type: 3}
     playerData: {fileID: 11400000, guid: f02d47e21506d9d4b86a1fa434061807, type: 2}
+  - characterName: Adventurer
+    prefab: {fileID: 7010308643814302816, guid: d7b4f8a636b721a4eb0a514f021e46e6, type: 3}
+    playerData: {fileID: 11400000, guid: 6975036ec01bb1b45b8791fbfa2ca351, type: 2}
+  - characterName: Demo
+    prefab: {fileID: 6474677785295716979, guid: df5ca477a8ae5af479491ef552a24505, type: 3}
+    playerData: {fileID: 11400000, guid: d2be1c59ee1165740aaad80f05297898, type: 2}
 --- !u!1 &1629207045
 GameObject:
   m_ObjectHideFlags: 0

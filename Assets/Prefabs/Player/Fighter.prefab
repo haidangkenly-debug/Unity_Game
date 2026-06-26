@@ -46,6 +46,7 @@ GameObject:
   - component: {fileID: 2202700096260440152}
   - component: {fileID: 5675487719055486645}
   - component: {fileID: 4568886497986737636}
+  - component: {fileID: 4593175721038422318}
   m_Layer: 0
   m_Name: Fighter
   m_TagString: Untagged
@@ -161,8 +162,8 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.015851498, y: 1.0087997}
-  m_Size: {x: 1.1024771, y: 2.0605085}
+  m_Offset: {x: -0.011934787, y: 1.0087997}
+  m_Size: {x: 0.8439601, y: 2.0605085}
   m_Direction: 0
 --- !u!114 &2202700096260440152
 MonoBehaviour:
@@ -214,6 +215,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e887c9112e711e24da243dd417ee3ff7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SkillManager
+--- !u!114 &4593175721038422318
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5180832710633210594}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d6cfb2cfa579e24697928f398b8add5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GhostTrail
+  ghostPrefab: {fileID: 2791282183077844256, guid: 5cfcce7511a9c6d4cbaa27cbe79c7b70, type: 3}
+  ghostDelay: 0.05
+  ghostColor: {r: 1, g: 1, b: 1, a: 0.6}
 --- !u!1 &5662528752984136135
 GameObject:
   m_ObjectHideFlags: 0

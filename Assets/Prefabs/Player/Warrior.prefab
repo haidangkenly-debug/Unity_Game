@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 1174884662719886520}
   - component: {fileID: 3268888320676484002}
   - component: {fileID: 4222821989175901181}
+  - component: {fileID: 7868926792024110574}
   m_Layer: 0
   m_Name: Warrior
   m_TagString: Untagged
@@ -122,7 +123,7 @@ Rigidbody2D:
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_GravityScale: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 20ff27273f8999146946a8766636d292, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -183,6 +184,21 @@ MonoBehaviour:
   playerData: {fileID: 11400000, guid: c6f9bb59712414a4cb8f21b5977961cb, type: 2}
   currentHP: 0
   currentMana: 0
+--- !u!114 &7868926792024110574
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4298575215034879060}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d6cfb2cfa579e24697928f398b8add5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GhostTrail
+  ghostPrefab: {fileID: 2791282183077844256, guid: 5cfcce7511a9c6d4cbaa27cbe79c7b70, type: 3}
+  ghostDelay: 0.05
+  ghostColor: {r: 1, g: 1, b: 1, a: 0.6}
 --- !u!1 &6687060733183989147
 GameObject:
   m_ObjectHideFlags: 0

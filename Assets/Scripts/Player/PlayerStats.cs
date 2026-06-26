@@ -32,6 +32,7 @@ public class PlayerStats : MonoBehaviour
         {
             currentHP = 0;
             OnDied?.Invoke();
+            Debug.Log($"<color=red>[PlayerStats] ☠️ Nhân vật chết!</color>");
         }
     }
 
@@ -39,6 +40,7 @@ public class PlayerStats : MonoBehaviour
     {
         currentHP = Mathf.Min(currentHP + amount, playerData.maxHP);
         OnHPChanged?.Invoke(currentHP, playerData.maxHP);
+        Debug.Log($"<color=green>[PlayerStats] ❤️ Hồi máu: {amount}</color>");
     }
 
     public void UseMana(float amount)
@@ -52,12 +54,18 @@ public class PlayerStats : MonoBehaviour
         }
         Debug.LogWarning($"<color=red>[PlayerStats] KHÔNG ĐỦ MANA! Cần {amount}, nhưng chỉ có {currentMana}.</color>");
     }
-    
 
     public void RestoreMana(float amount)
     {
         currentMana = Mathf.Min(currentMana + amount, playerData.maxMana);
         OnManaChanged?.Invoke(currentMana, playerData.maxMana);
+        Debug.Log($"<color=cyan>[PlayerStats] 🔵 Hồi Mana: {amount}</color>");
+    }
+
+    // ✅ NEW: Separate check from consume
+    public bool HasEnoughMana(float amount)
+    {
+        return currentMana >= amount;
     }
 
     public bool CanUseMana(float amount)
@@ -65,7 +73,6 @@ public class PlayerStats : MonoBehaviour
         bool hasEnough = currentMana >= amount;
         if (!hasEnough)
         {
-            // Bổ sung cảnh báo ngay tại hàm check để chắc chắn Console sẽ báo lỗi
             Debug.LogWarning($"<color=red>[PlayerStats] Từ chối dùng kỹ năng: Không đủ Mana! (Cần {amount})</color>");
         }
         return hasEnough;
@@ -103,5 +110,7 @@ public class PlayerStats : MonoBehaviour
 
         OnHPChanged?.Invoke(currentHP, playerData.maxHP);
         OnManaChanged?.Invoke(currentMana, playerData.maxMana);
+        
+        Debug.Log($"<color=cyan>[PlayerStats] 📊 Cập nhật stats cho: {playerData.characterName}</color>");
     }
 }
