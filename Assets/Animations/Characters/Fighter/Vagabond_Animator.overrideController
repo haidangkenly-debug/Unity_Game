@@ -6,7 +6,7 @@ AnimatorOverrideController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Fighter_Animator
+  m_Name: Vagabond_Animator
   m_Controller: {fileID: 9100000, guid: e9863581f92f26445ab44033d107cda9, type: 2}
   m_Clips:
   - m_OriginalClip: {fileID: 7400000, guid: 5d9317617496a514db5cac825e76fd80, type: 2}

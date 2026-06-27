@@ -16028,6 +16028,9 @@ MonoBehaviour:
   - characterName: Adventurer
     prefab: {fileID: 7010308643814302816, guid: d7b4f8a636b721a4eb0a514f021e46e6, type: 3}
     playerData: {fileID: 11400000, guid: 6975036ec01bb1b45b8791fbfa2ca351, type: 2}
+  - characterName: Vagabond
+    prefab: {fileID: 2432720452554677811, guid: c42090834c39a35468af70b663a99931, type: 3}
+    playerData: {fileID: 11400000, guid: db17d20938fc4234a933b9ecf3864329, type: 2}
 --- !u!1 &1600292902
 GameObject:
   m_ObjectHideFlags: 0

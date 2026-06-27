@@ -20,23 +20,35 @@ public class AttackState : PlayerState
         rb.gravityScale = playerData.normalGravity;
         Debug.Log($"<color=orange>[AttackState] ⚔️ Bắt đầu: {skillName}</color>");
     }
+
     public void ExecuteAttackHit()
     {
         if (playerController.attackPoint == null) return;
 
-        Vector2 boxSize = new Vector2(playerData.attackRange * 2f, playerData.attackRange * 2f); 
+        Vector2 boxSize = new Vector2(playerData.attackRange * 2f, playerData.attackRange * 2f);
 
-        // Dùng OverlapBoxAll thay vì OverlapCircleAll
+        // Dùng OverlapBoxAll để quét vùng đánh hình chữ nhật
         Collider2D[] hitEnemies = Physics2D.OverlapBoxAll(
-            playerController.attackPoint.position, 
-            boxSize, 
-            0f, 
+            playerController.attackPoint.position,
+            boxSize,
+            0f,
             playerController.attackLayer
         );
 
+        // 🔥 KÍCH HOẠT RUNG CAMERA KHI CHÉM TRÚNG QUÁI
+        if (hitEnemies.Length > 0)
+        {
+            CameraController cam = Object.FindAnyObjectByType<CameraController>();
+            if (cam != null)
+            {
+                // Thời gian rung: 0.15 giây, Cường độ lệch: 0.15 đơn vị (Tốt cho game pixel)
+                cam.Shake(0.15f, 0.15f);
+            }
+        }
+
         PlayerStats stats = playerController.GetComponent<PlayerStats>();
-        float finalDamage = stats != null 
-            ? stats.CalculateDamage(playerData.attackPower * currentSkillDamageMultiplier) 
+        float finalDamage = stats != null
+            ? stats.CalculateDamage(playerData.attackPower * currentSkillDamageMultiplier)
             : playerData.attackPower * currentSkillDamageMultiplier;
 
         foreach (Collider2D enemy in hitEnemies)
@@ -45,6 +57,7 @@ public class AttackState : PlayerState
             Debug.Log($"<color=red>💥 Chém trúng: {enemy.name} - Gây {finalDamage} DMG!</color>");
         }
     }
+
     public override void Update()
     {
         if (canCancelAttack)

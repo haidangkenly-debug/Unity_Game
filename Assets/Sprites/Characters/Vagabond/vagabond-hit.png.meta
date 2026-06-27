@@ -1,10 +1,19 @@
 fileFormatVersion: 2
-guid: bc9e381cc038daa46b9cef3d5dd7557e
+guid: 0e2e16947d344ec4381d94ef6b963c4a
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -902086654454736923
-    second: HP_0
+      213: -2861158270030535504
+    second: vagabond-hit_0
+  - first:
+      213: 3404313277575875415
+    second: vagabond-hit_1
+  - first:
+      213: 3511874271019936616
+    second: vagabond-hit_2
+  - first:
+      213: -7010932816303609791
+    second: vagabond-hit_3
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -37,7 +46,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -51,7 +60,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 16
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -74,7 +83,7 @@ TextureImporter:
     buildTarget: DefaultTexturePlatform
     maxTextureSize: 2048
     resizeAlgorithm: 0
-    textureFormat: -1
+    textureFormat: 4
     textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
@@ -100,23 +109,89 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: HP_0
+      name: vagabond-hit_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 32
-        height: 32
+        width: 64
+        height: 64
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 5e7da9c97f42b73f0800000000000000
-      internalID: -902086654454736923
+      spriteID: 0b4a8a466bf1b48d0800000000000000
+      internalID: -2861158270030535504
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: vagabond-hit_1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 75b4e0e93ec8e3f20800000000000000
+      internalID: 3404313277575875415
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: vagabond-hit_2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 86b2af3fa0facb030800000000000000
+      internalID: 3511874271019936616
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: vagabond-hit_3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1482814cfb924be90800000000000000
+      internalID: -7010932816303609791
       vertices: []
       indices: 
       edges: []
@@ -125,7 +200,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 8a35928f129a9414cb455e750febae7a
     internalID: 0
     vertices: []
     indices: 
@@ -133,9 +208,14 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      HP_0: -902086654454736923
+      vagabond-hit_0: -2861158270030535504
+      vagabond-hit_1: 3404313277575875415
+      vagabond-hit_2: 3511874271019936616
+      vagabond-hit_3: -7010932816303609791
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
