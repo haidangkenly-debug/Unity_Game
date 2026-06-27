@@ -37,6 +37,9 @@ public class PlayerData : ScriptableObject
     public string skill2Name = "Attack_2";
     public float skill2Damage = 20f;
     public float skill2Cooldown = 1.5f;
+    [Header("Attack Settings")]
+    public float attackRange = 0.8f;      // Bán kính vùng chém
+    public LayerMask enemyLayer;          // Tick chọn layer "Enemy" trong Unity
     [Header("Ground Check")]
     public float groundCheckRadius = 0.2f;
 }

@@ -12,8 +12,8 @@ TagManager:
   - Water
   - UI
   - Ground
-  - 
-  - 
+  - Enemy
+  - Player
   - 
   - 
   - 
@@ -40,6 +40,9 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: HpBar
+    uniqueID: 2914681647
     locked: 0
   m_RenderingLayers:
   - Default

@@ -25,15 +25,21 @@ public class PlayerStats : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
+        if (currentHP <= 0) return;
         currentHP -= damage;
+        currentHP = Mathf.Clamp(currentHP, 0, playerData.maxHP);
         OnHPChanged?.Invoke(currentHP, playerData.maxHP);
-
         if (currentHP <= 0)
         {
-            currentHP = 0;
-            OnDied?.Invoke();
-            Debug.Log($"<color=red>[PlayerStats] ☠️ Nhân vật chết!</color>");
+            Die();
         }
+        
+        Debug.Log($"<color=yellow>[PlayerStats] Bị quái đánh! Máu còn: {currentHP}</color>");
+    }
+    private void Die()
+    {
+        OnDied?.Invoke();
+        Debug.Log($"<color=red>[PlayerStats] ☠️ Nhân vật đã hy sinh!</color>");
     }
 
     public void Heal(float amount)

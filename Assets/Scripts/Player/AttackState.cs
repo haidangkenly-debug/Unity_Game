@@ -5,10 +5,12 @@ public class AttackState : PlayerState
 {
     private string skillName;
     private bool canCancelAttack;
+    private float currentSkillDamageMultiplier = 1f;
 
-    public void SetupAttack(string skill)
+    public void SetupAttack(string skill, float damageMultiplier = 1f)
     {
         skillName = skill;
+        currentSkillDamageMultiplier = damageMultiplier;
     }
 
     public override void Enter()
@@ -18,7 +20,31 @@ public class AttackState : PlayerState
         rb.gravityScale = playerData.normalGravity;
         Debug.Log($"<color=orange>[AttackState] ⚔️ Bắt đầu: {skillName}</color>");
     }
+    public void ExecuteAttackHit()
+    {
+        if (playerController.attackPoint == null) return;
 
+        Vector2 boxSize = new Vector2(playerData.attackRange * 2f, playerData.attackRange * 2f); 
+
+        // Dùng OverlapBoxAll thay vì OverlapCircleAll
+        Collider2D[] hitEnemies = Physics2D.OverlapBoxAll(
+            playerController.attackPoint.position, 
+            boxSize, 
+            0f, 
+            playerController.attackLayer
+        );
+
+        PlayerStats stats = playerController.GetComponent<PlayerStats>();
+        float finalDamage = stats != null 
+            ? stats.CalculateDamage(playerData.attackPower * currentSkillDamageMultiplier) 
+            : playerData.attackPower * currentSkillDamageMultiplier;
+
+        foreach (Collider2D enemy in hitEnemies)
+        {
+            enemy.SendMessage("TakeDamage", finalDamage, SendMessageOptions.DontRequireReceiver);
+            Debug.Log($"<color=red>💥 Chém trúng: {enemy.name} - Gây {finalDamage} DMG!</color>");
+        }
+    }
     public override void Update()
     {
         if (canCancelAttack)

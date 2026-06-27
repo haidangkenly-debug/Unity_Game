@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be73b31702b82f444a35a887a5910f23, type: 3}
+  m_Name: Demon
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyData
+  enemyName: Demon
+  enemyIcon: {fileID: 0}
+  maxHP: 50
+  attackPower: 5
+  attackRange: 1
+  walkSpeed: 3
+  chaseSpeed: 5
+  normalGravity: 4
+  fallGravity: 5
+  detectionRange: 10
+  attackCooldown: 1.5
+  patrolRadius: 5
+  patrolDuration: 5
+  restDuration: 5
+  returnToHomeSpeed: 5
+  groundCheckRadius: 0.5
+  goldDrop: 10
+  expDrop: 50

@@ -10,6 +10,8 @@ public class PlayerController : MonoBehaviour
     public Rigidbody2D rb;
     public PlayerInput playerInput;
     public Animator anim;
+    public Transform attackPoint;
+    public LayerMask attackLayer;
 
     [Header("Ground Check")]
     public Transform groundCheck;  // 🔧 CRITICAL: Must be assigned in prefab!
@@ -30,11 +32,7 @@ public class PlayerController : MonoBehaviour
     private bool jumpPressed;
     private int selectedAttackSlot = 1;
     public int facingDirection = 1;
-
-    // ✅ NEW: Track initialization state
     private bool isInitialized = false;
-
-    // ✅ NEW: Single property for readiness check
     private bool IsReady => playerData != null && currentState != null && isInitialized;
 
     private void Start()
@@ -189,48 +187,33 @@ public class PlayerController : MonoBehaviour
                 Debug.LogWarning("[PlayerController] Cannot attack - system not ready!");
                 return;
             }
-
             if (currentState is DashState || currentState is AttackState) return;
-
             SkillManager skillManager = GetComponent<SkillManager>();
-            PlayerStats stats = GetComponent<PlayerStats>();
-
-            if (skillManager == null || stats == null)
+            if (skillManager == null)
             {
-                Debug.LogError("[PlayerController] ❌ SkillManager or PlayerStats not found!");
+                Debug.LogError("[PlayerController] ❌ SkillManager not found!");
                 return;
             }
-
-            float baseDamage = playerData.attackPower;
-
-            // ================= SLOT 1 (ATTACK_1) =================
             if (selectedAttackSlot == 1)
             {
                 if (skillManager.CanUseSkill1())
                 {
-                    attackState.SetupAttack("Attack_1");
+                    attackState.SetupAttack("Attack_1", 1.0f);
                     TransitionToState(attackState);
                     skillManager.UseSkill1();
-
-                    float damageDealt = stats.CalculateDamage(baseDamage * 1.0f);
-                    Debug.Log($"<color=green>[ATTACK 1] ✅ Gây: {damageDealt} DMG</color>");
                 }
                 else
                 {
                     Debug.Log("<color=red>[ATTACK 1] ⏳ Đang cooldown!</color>");
                 }
             }
-            // ================= SLOT 2 (ATTACK_2) =================
             else if (selectedAttackSlot == 2)
             {
                 if (skillManager.CanUseSkill2())
                 {
-                    attackState.SetupAttack("Attack_2");
+                    attackState.SetupAttack("Attack_2", 1.5f);
                     TransitionToState(attackState);
                     skillManager.UseSkill2();
-
-                    float damageDealt = stats.CalculateDamage(baseDamage * 1.5f);
-                    Debug.Log($"<color=green>[ATTACK 2] ✅ Gây: {damageDealt} DMG</color>");
                 }
                 else
                 {
@@ -365,6 +348,13 @@ public class PlayerController : MonoBehaviour
     {
         if (currentState is AttackState attack) attack.FinishAttack();
     }
+    public void AnimEvent_TriggerAttack()
+    {
+        if (currentState is AttackState attack)
+        {
+            attack.ExecuteAttackHit();
+        }
+    }
 
     #endregion
 
@@ -374,6 +364,14 @@ public class PlayerController : MonoBehaviour
         if (groundCheck != null && playerData != null)
         {
             Gizmos.DrawWireSphere(groundCheck.position, playerData.groundCheckRadius);
+        }
+
+        // Vẽ vùng tấn công (Box) màu vàng
+        if (attackPoint != null && playerData != null)
+        {
+            Gizmos.color = Color.yellow;
+            Vector2 boxSize = new Vector2(playerData.attackRange * 2f, playerData.attackRange * 2f);
+            Gizmos.DrawWireCube(attackPoint.position, boxSize);
         }
     }
 }

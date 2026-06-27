@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class CharacterPrefabManager : MonoBehaviour
 {
-    [SerializeField] private CharacterPrefabEntry[] characterPrefabs = new CharacterPrefabEntry[5];
+    [SerializeField] private CharacterPrefabEntry[] characterPrefabs;
     
     private int currentCharacterIndex = 0;
     private GameObject currentCharacterInstance;
@@ -60,20 +60,39 @@ public class CharacterPrefabManager : MonoBehaviour
         SpawnCharacter(index);
     }
 
-    // ✅ REFACTORED: Main spawn logic (simplified)
     private void SpawnCharacter(int index)
     {
+        CharacterPrefabEntry entry = characterPrefabs[index];
+
+        // 1. KIỂM TRA AN TOÀN TRƯỚC: Nếu slot này rỗng, bỏ qua luôn để không làm mất nhân vật hiện tại
+        if (!ValidateEntry(entry)) 
+        {
+            // Tùy chọn: Nhảy ngược về index 0 để tạo vòng lặp nếu hết danh sách
+            if (index != 0) 
+            {
+                Debug.LogWarning("[CharacterPrefabManager] Slot rỗng, quay vòng về nhân vật đầu tiên!");
+                SpawnCharacter(0);
+            }
+            return;
+        }
+
+        // Lấy vị trí của nhân vật cũ (nếu có)
+        Vector3 spawnPosition = spawnPoint.position;
+        if (currentCharacterInstance != null)
+        {
+            spawnPosition = currentCharacterInstance.transform.position;
+            Debug.Log($"<color=yellow>📍 Lưu vị trí cũ: {spawnPosition}</color>");
+        }
+
+        // 2. DỮ LIỆU ĐÃ AN TOÀN -> BÂY GIỜ MỚI XÓA NHÂN VẬT CŨ
         DestroyCurrentCharacter();
 
         currentCharacterIndex = index;
-        CharacterPrefabEntry entry = characterPrefabs[index];
 
-        if (!ValidateEntry(entry)) return;
-
-        // Instantiate new character
+        // 3. SPAWN NHÂN VẬT MỚI
         currentCharacterInstance = Instantiate(
             entry.prefab,
-            spawnPoint.position,
+            spawnPosition,
             Quaternion.identity,
             spawnPoint 
         );
@@ -86,11 +105,10 @@ public class CharacterPrefabManager : MonoBehaviour
 
         SetupCharacter(currentCharacterInstance, entry);
 
-        Debug.Log($"<color=cyan>✅ [CharacterPrefabManager] Spawned: {entry.characterName} (Index: {index})</color>");
+        Debug.Log($"<color=cyan>✅ [CharacterPrefabManager] Spawned: {entry.characterName} (Index: {index}) tại {spawnPosition}</color>");
         onCharacterChanged?.Invoke(currentCharacterInstance, entry.playerData);
     }
 
-    // ✅ HELPER METHOD 1: Cleanup
     private void DestroyCurrentCharacter()
     {
         if (currentCharacterInstance == null) return;
@@ -107,7 +125,6 @@ public class CharacterPrefabManager : MonoBehaviour
         Debug.Log("[CharacterPrefabManager] 🗑️ Destroyed previous character instance");
     }
 
-    // ✅ HELPER METHOD 2: Validation
     private bool ValidateEntry(CharacterPrefabEntry entry)
     {
         if (entry == null || entry.prefab == null)
@@ -125,15 +142,12 @@ public class CharacterPrefabManager : MonoBehaviour
         return true;
     }
 
-    // ✅ HELPER METHOD 3: Setup components
     private void SetupCharacter(GameObject instance, CharacterPrefabEntry entry)
     {
         var controller = instance.GetComponent<PlayerController>();
         var stats = instance.GetComponent<PlayerStats>();
         var rb = instance.GetComponent<Rigidbody2D>();
         var anim = instance.GetComponentInChildren<Animator>();
-
-        // Validate critical components
         if (controller == null)
         {
             Debug.LogError("[CharacterPrefabManager] ❌ PlayerController not found on prefab!");
@@ -154,11 +168,7 @@ public class CharacterPrefabManager : MonoBehaviour
             Destroy(instance);
             return;
         }
-
-        // Initialize PlayerController with data
         controller.OnPlayerDataAssigned(entry.playerData);
-
-        // Update stats if present
         if (stats != null)
         {
             stats.UpdateCharacterData(entry.playerData);
@@ -168,15 +178,12 @@ public class CharacterPrefabManager : MonoBehaviour
         {
             Debug.LogWarning("[CharacterPrefabManager] ⚠️ PlayerStats not found on prefab!");
         }
-
-        // Warn if Animator missing
         if (anim == null)
         {
             Debug.LogWarning("[CharacterPrefabManager] ⚠️ Animator not found on prefab!");
         }
     }
 
-    // ========== GETTER METHODS ==========
     public GameObject GetCurrentCharacter() => currentCharacterInstance;
     public int GetCurrentCharacterIndex() => currentCharacterIndex;
     public string GetCurrentCharacterName() => characterPrefabs[currentCharacterIndex].characterName;

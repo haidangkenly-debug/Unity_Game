@@ -35,4 +35,8 @@ MonoBehaviour:
   skill2Name: Attack_2
   skill2Damage: 20
   skill2Cooldown: 1.5
+  attackRange: 1.5
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 384
   groundCheckRadius: 0.5
